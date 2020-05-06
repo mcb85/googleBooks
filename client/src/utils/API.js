@@ -14,8 +14,9 @@ export default {
   // Gets all books
   getBooks: function (data) {
     return axios.get(url);
+    //console.log(data);
     //return axios.get("/api/books");
-    console.log(data);
+    
   },
   
   // Deletes the book with the given id

@@ -2,41 +2,52 @@ import React, { Component } from "react";
 import DeleteBtn from "../components/DeleteBtn";
 import Jumbotron from "../components/Jumbotron";
 import API from "../utils/API";
+//import apiKey from "../keys";
 import { Link } from "react-router-dom";
 import { Col, Row, Container } from "../components/Grid";
 import { List, ListItem } from "../components/List";
-import { Input, TextArea, FormBtn } from "../components/Form";
+import { Input, FormBtn } from "../components/Form";
 import Nav from "../components/Nav";
 import axios from "axios";
+import Wrapper from "../components/Wrapper";
+import Card from "../components/Card";
 
 class Books extends Component {
-  state = {
+  constructor(props) {
+    super(props);
+  
+  this.state = {
     books: [],
-    title: "",
+    query: "",
   };
-
-  /*componentDidMount() {
-    this.loadBooks();
-  }*/
+}
+  
 
   search = () => {
-    let query = this.state.title; 
+    let query = this.state.query;
     let base_url = "https://www.googleapis.com/books/v1/volumes?q=" + query;
     axios.get(base_url)
-      .then((res) =>
-        this.setState({
-          books: res.data,
-          title: "",
-          author: "",
-          description: "",
-          image: "",
-          link: "",
-        })
-      )
-      .catch((err) => console.log(err));
+      .then(res => res.json())
+        .then(
+          (res) => {
+            this.setState({
+              books: res.books,
+              title: "",
+              author: "",
+              description: "",
+              image: "",
+              link: ""
+            });
+          },
+          (error) => {
+            this.setState({
+              error
+            });
+          } 
+    )
+    console.log("books" + this.state.books);
   }
-    
-
+  
 
   loadBooks = () => {
     API.getBooks()
@@ -90,38 +101,48 @@ class Books extends Component {
               <h3 className="d-flex justify-content start"> Book Search</h3>
               <form>
                 <Input
-                  value={this.state.title}
+                  value={this.state.query}
                   onChange={this.handleInputChange}
                   name="title"
                   placeholder="Title (required)"
                 />
 
                 <FormBtn
-                  disabled={!this.state.title}
+                  disabled={!this.state.query}
                   onClick={this.search}
                 >
                   Search
                 </FormBtn>
               </form>
             </Jumbotron>
+          <h1>Results</h1>
+            <Wrapper>
+              
             {this.state.books.length ? (
               <List>
                 {this.state.books.map((book) => (
                   <ListItem key={book._id}>
                     <Link to={"/books/" + book._id}>
+                      <Card>
                       <strong>
-                        {book.title} Written by {book.author}
+                        {this.state.title} Written by {this.state.author}
                       </strong>
+                      {this.state.image} {this.state.description}
+                      </Card>
                     </Link>
                     <DeleteBtn onClick={() => this.deleteBook(book._id)} />
+                  
                   </ListItem>
+                  
                 ))}
               </List>
             ) : (
               <h3>No Results to Display</h3>
-            )}
+                )}
+            </Wrapper>
           </Col>
         </Row>
+        
       </Container>
     );
   }
