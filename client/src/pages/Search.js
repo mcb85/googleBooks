@@ -7,20 +7,36 @@ import { Col, Row, Container } from "../components/Grid";
 import { List, ListItem } from "../components/List";
 import { Input, TextArea, FormBtn } from "../components/Form";
 import Nav from "../components/Nav";
+import axios from "axios";
 
 class Books extends Component {
   state = {
     books: [],
     title: "",
-    author: "",
-    description: "",
-    image: "",
-    link: ""
   };
 
-  componentDidMount() {
+  /*componentDidMount() {
     this.loadBooks();
+  }*/
+
+  search = () => {
+    let query = this.state.title; 
+    let base_url = "https://www.googleapis.com/books/v1/volumes?q=" + query;
+    axios.get(base_url)
+      .then((res) =>
+        this.setState({
+          books: res.data,
+          title: "",
+          author: "",
+          description: "",
+          image: "",
+          link: "",
+        })
+      )
+      .catch((err) => console.log(err));
   }
+    
+
 
   loadBooks = () => {
     API.getBooks()
@@ -45,13 +61,15 @@ class Books extends Component {
 
   handleFormSubmit = event => {
     event.preventDefault();
-    if (this.state.title && this.state.author) {
+    if (this.state.title) {
       API.saveBook({
         title: this.state.title,
         author: this.state.author,
-        synopsis: this.state.synopsis
+        description: this.state.description,
+        image: this.state.image,
+        link: this.state.link
       })
-        .then(res => this.loadBooks())
+        .then(res => this.search())
         .catch(err => console.log(err));
     }
   };
@@ -69,7 +87,7 @@ class Books extends Component {
           </Col>
           <Col size="md-12">
             <Jumbotron>
-              <h3 class="d-flex justify-content start"> Book Search</h3>
+              <h3 className="d-flex justify-content start"> Book Search</h3>
               <form>
                 <Input
                   value={this.state.title}
@@ -80,7 +98,7 @@ class Books extends Component {
 
                 <FormBtn
                   disabled={!this.state.title}
-                  onClick={this.handleFormSubmit}
+                  onClick={this.search}
                 >
                   Search
                 </FormBtn>

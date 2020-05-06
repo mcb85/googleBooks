@@ -6,15 +6,15 @@ function Nav() {
       <a className="navbar-brand" href="/">
         Google Books Search
       </a>
-      <div class="collapse navbar-collapse" id="navbarNavDropdown">
-        <ul class="navbar-nav">
-          <li class="nav-item">
-            <a class="nav-link" href="/">
-              Search <span class="sr-only"></span>
+      <div className="collapse navbar-collapse" id="navbarNavDropdown">
+        <ul className="navbar-nav">
+          <li className="nav-item">
+            <a className="nav-link" href="/">
+              Search <span className="sr-only"></span>
             </a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/Saved">
+          <li className="nav-item">
+            <a className="nav-link" href="/Saved">
               Saved
             </a>
           </li>
