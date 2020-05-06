@@ -3,3 +3,9 @@ This app allows the user to enter the title of a book they would like to search 
 
 ## Technologies Used
 Technologies used include, but are not limited to: React, Express, Node, MongoDB and Mongoose, Google Books API, and Axios. 
+
+## Author
+Mariana Bromfield
+
+## App Link
+https://nameless-mesa-64007.herokuapp.com/
