@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import DeleteBtn from "../components/DeleteBtn";
+import SaveBtn from "../components/DeleteBtn";
 import Jumbotron from "../components/Jumbotron";
 import API from "../utils/API";
 //import apiKey from "../keys";
@@ -15,75 +15,87 @@ import Card from "../components/Card";
 class Books extends Component {
   constructor(props) {
     super(props);
-  
-  this.state = {
-    books: [],
-    query: "",
-  };
-}
-  
 
-  search = () => {
+    this.state = {
+      books: [],
+      query: "",
+    };
+  }
+
+  search = (e) => {
+    e.preventDefault();
+
     let query = this.state.query;
     let base_url = "https://www.googleapis.com/books/v1/volumes?q=" + query;
-    axios.get(base_url)
-      .then(res => res.json())
-        .then(
-          (res) => {
-            this.setState({
-              books: res.books,
-              title: "",
-              author: "",
-              description: "",
-              image: "",
-              link: ""
-            });
-          },
-          (error) => {
-            this.setState({
-              error
-            });
-          } 
-    )
+    axios
+      .get(base_url)
+      .then(
+        async (res) => {
+          // console.log(`result is: ${JSON.stringify(res.data)}`);
+          const allBooks = [];
+          res.data.items.forEach(item => {
+            const book = [];
+            book["_id"] = item.id;
+            book["title"] = item.volumeInfo.title;
+            book["authors"] = item.volumeInfo.authors;
+            book["image"] = item.volumeInfo.imageLinks.thumbnail;
+            book["description"] = item.volumeInfo.description;
+            book["selfLink"] = item.selfLink;
+            allBooks.push(book);
+          });
+          await this.setState((state, props) => ({
+            books: allBooks
+          }));
+        },
+        (error) => {
+          console.log(`Error: ${error.message}`);
+          this.setState((state, props) => ({
+            error
+          }));
+        }
+      );
     console.log("books" + this.state.books);
-  }
-  
-
-  loadBooks = () => {
-    API.getBooks()
-      .then(res =>
-        this.setState({ books: res.data, title: "", author: "", description: "", image: "", link: "" })
-      )
-      .catch(err => console.log(err));
   };
 
-  deleteBook = id => {
-    API.deleteBook(id)
-      .then(res => this.loadBooks())
-      .catch(err => console.log(err));
-  };
+  // loadBooks = () => {
+  //   API.getBooks()
+  //     .then(res =>
+  //       this.setState({ books: res.data, title: "", author: "", description: "", image: "", link: "" })
+  //     )
+  //     .catch(err => console.log(err));
+  // };
 
-  handleInputChange = event => {
+  // deleteBook = id => {
+  //   API.deleteBook(id)
+  //     .then(res => this.loadBooks())
+  //     .catch(err => console.log(err));
+  // };
+
+  handleInputChange = async (event) => {
+    // console.log(`event name: ${JSON.stringify(event.target.name)}`);
+    // console.log(`event value: ${JSON.stringify(event.target.value)}`);
+    // console.log(`pre state is: ${JSON.stringify(this.state)}`);
     const { name, value } = event.target;
-    this.setState({
-      [name]: value
-    });
+    await this.setState((state, props) => ({
+      query: value,
+    }));
+    console.log(`post state is: ${JSON.stringify(this.state)}`);
   };
 
-  handleFormSubmit = event => {
-    event.preventDefault();
-    if (this.state.title) {
-      API.saveBook({
-        title: this.state.title,
-        author: this.state.author,
-        description: this.state.description,
-        image: this.state.image,
-        link: this.state.link
-      })
-        .then(res => this.search())
-        .catch(err => console.log(err));
-    }
-  };
+  // handleFormSubmit = event => {
+  //   event.preventDefault();
+  //   if (this.state.title) {
+  //     API.saveBook({
+  //       title: this.state.title,
+  //       author: this.state.author,
+  //       description: this.state.description,
+  //       image: this.state.image,
+  //       link: this.state.link
+  //     })
+  //       .then(res => this.search())
+  //       .catch(err => console.log(err));
+  //   }
+  // };
 
   render() {
     return (
@@ -103,46 +115,38 @@ class Books extends Component {
                 <Input
                   value={this.state.query}
                   onChange={this.handleInputChange}
-                  name="title"
+                  name="query"
                   placeholder="Title (required)"
                 />
 
-                <FormBtn
-                  disabled={!this.state.query}
-                  onClick={this.search}
-                >
+                <FormBtn disabled={!this.state.query} onClick={this.search}>
                   Search
                 </FormBtn>
               </form>
             </Jumbotron>
-          <h1>Results</h1>
+            <h1>Results</h1>
             <Wrapper>
-              
-            {this.state.books.length ? (
-              <List>
-                {this.state.books.map((book) => (
-                  <ListItem key={book._id}>
-                    <Link to={"/books/" + book._id}>
+              {this.state.books.length ? (
+                <List>
+                  {this.state.books.map((book) => (
+                    <ListItem key={book["_id"]}>
                       <Card>
-                      <strong>
-                        {this.state.title} Written by {this.state.author}
-                      </strong>
-                      {this.state.image} {this.state.description}
+                        <strong>
+                          {book["title"]} Written by {book["authors"]}
+                        </strong>
+                        <img src={book["image"]} alt={book["title"]} />
+                        <p>{book["description"]}</p>
                       </Card>
-                    </Link>
-                    <DeleteBtn onClick={() => this.deleteBook(book._id)} />
-                  
-                  </ListItem>
-                  
-                ))}
-              </List>
-            ) : (
-              <h3>No Results to Display</h3>
-                )}
+                      <SaveBtn onClick={() => this.saveBook(book["_id"])} />
+                    </ListItem>
+                  ))}
+                </List>
+              ) : (
+                <h3>No Results to Display</h3>
+              )}
             </Wrapper>
           </Col>
         </Row>
-        
       </Container>
     );
   }

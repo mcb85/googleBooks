@@ -1,11 +1,11 @@
 import React from "react";
 import "./style.css";
 
-function Card(props) {
+function Card({children}) {
   return (
     <div
       className="card">
-      {props}
+      {children}
     </div>
   );
 }
