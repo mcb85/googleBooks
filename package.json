@@ -1,6 +1,5 @@
 {
   "name": "google-books-search",
-  "homepage": "https: //nameless-mesa-64007.herokuapp.com/",
   "version": "1.0.0",
   "description": "GoogleBooks",
   "main": "server.js",

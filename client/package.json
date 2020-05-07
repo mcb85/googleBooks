@@ -1,6 +1,5 @@
 {
   "name": "google-books-search",
-  "homepage": "https: //nameless-mesa-64007.herokuapp.com/",
   "version": "0.1.0",
   "description": "GoogleBooks",
   "private": true,
