@@ -14,7 +14,7 @@ function Nav() {
             </a>
           </li>
           <li className="nav-item">
-            <a className="nav-link" href="/Saved">
+            <a className="nav-link" href="/saved">
               Saved
             </a>
           </li>

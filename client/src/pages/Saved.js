@@ -5,15 +5,12 @@ import API from "../utils/API";
 import { Link } from "react-router-dom";
 import { Col, Row, Container } from "../components/Grid";
 import { List, ListItem } from "../components/List";
-import { Input, TextArea, FormBtn } from "../components/Form";
 import Nav from "../components/Nav";
-import Grid from "../components/Grid";
-import axios from "axios";
+//import axios from "axios";
 
 class Saved extends Component {
   state = {
     books: [],
-    title: "",
   };
 
   componentDidMount() {
@@ -49,7 +46,7 @@ class Saved extends Component {
     });
   };
 
-  handleFormSubmit = (event) => {
+  /*handleFormSubmit = (event) => {
     event.preventDefault();
     if (this.state.title) {
       API.saveBook({
@@ -62,7 +59,7 @@ class Saved extends Component {
         .then((res) => this.search())
         .catch((err) => console.log(err));
     }
-  };
+  };*/
 
   render() {
     return (
@@ -77,23 +74,28 @@ class Saved extends Component {
           </Col>
           <Col size="md-12">
            
-              <h3 class="d-flex justify-content start"> Saved Books</h3>
-                {this.state.books.length ? (
-              <List>
-                {this.state.books.map((book) => (
-                  <ListItem key={book._id}>
-                    <Link to={"/books/" + book._id}>
-                      <strong>
-                        {book.title} Written by {book.author}
-                      </strong>
-                    </Link>
-                    <DeleteBtn onClick={() => this.deleteBook(book._id)} />
-                  </ListItem>
-                ))}
-              </List>
-            ) : (
-              <h3>No Results to Display</h3>
-            )}
+              <h3 className="d-flex justify-content start"> Saved Books</h3>
+               {this.state.books.length ? (
+                <Col size="sm-12">
+                <List>
+                  {this.state.books.map((book) => (
+                    <ListItem key={book["_id"]}>
+                        <strong>
+                          {book["title"]}
+                        </strong>
+                      <p> Written by {book["authors"]}</p>
+                      <Row><Col size="sm-2"><img src={book["image"]} alt={book["title"]} /></Col>
+                       <Col size="sm-10"><p>{book["description"]}</p></Col></Row>
+                      
+                      <DeleteBtn onClick={() => this.deleteBook(book["_id"])} />
+                    </ListItem>
+                  ))}
+                </List></Col>
+              ) : (
+                <h3>No Results to Display</h3>
+              )}
+            
+        
           </Col>
         </Row>
       </Container>

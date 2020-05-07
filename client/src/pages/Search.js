@@ -1,16 +1,17 @@
 import React, { Component } from "react";
-import SaveBtn from "../components/DeleteBtn";
+import SaveBtn from "../components/SaveBtn";
 import Jumbotron from "../components/Jumbotron";
-//import API from "../utils/API";
-//import apiKey from "../keys";
-//import { Link } from "react-router-dom";
+import API from "../utils/API";
+
+import { Link } from "react-router-dom";
 import { Col, Row, Container } from "../components/Grid";
 import { List, ListItem } from "../components/List";
 import { Input, FormBtn } from "../components/Form";
 import Nav from "../components/Nav";
 import axios from "axios";
-import Wrapper from "../components/Wrapper";
-import Card from "../components/Card";
+import ViewBtn from "../components/ViewBtn";
+
+
 
 class Books extends Component {
   constructor(props) {
@@ -40,7 +41,7 @@ class Books extends Component {
             book["authors"] = item.volumeInfo.authors;
             book["image"] = item.volumeInfo.imageLinks.thumbnail;
             book["description"] = item.volumeInfo.description;
-            book["link"] = item.selfLink;
+            book["link"] = item.volumeInfo.canonicalVolumeLink;
             allBooks.push(book);
           });
           await this.setState((state, props) => ({
@@ -71,15 +72,17 @@ class Books extends Component {
   //     .catch(err => console.log(err));
   // };
 
+  saveBook = id => {
+    API.saveBook(id)
+      .then((res) => this.loadBooks())
+      .catch(err => console.log(err));
+  };
+
   handleInputChange = async (event) => {
-    // console.log(`event name: ${JSON.stringify(event.target.name)}`);
-    // console.log(`event value: ${JSON.stringify(event.target.value)}`);
-    // console.log(`pre state is: ${JSON.stringify(this.state)}`);
     const { name, value } = event.target;
     await this.setState((state, props) => ({
       query: value,
     }));
-    console.log(`post state is: ${JSON.stringify(this.state)}`);
   };
 
   // handleFormSubmit = event => {
@@ -125,26 +128,27 @@ class Books extends Component {
               </form>
             </Jumbotron>
             <h1>Results</h1>
-            <Wrapper>
+            
               {this.state.books.length ? (
+                <Col size="sm-12">
                 <List>
                   {this.state.books.map((book) => (
                     <ListItem key={book["_id"]}>
-                      <Card>
                         <strong>
-                          {book["title"]} Written by {book["authors"]}
+                          {book["title"]}
                         </strong>
-                        <img src={book["image"]} alt={book["title"]} />
-                        <p>{book["description"]}</p>
-                      </Card>
+                      <p> Written by {book["authors"]}</p>
+                      <Row><Col size="sm-2"><img src={book["image"]} alt={book["title"]} /></Col>
+                       <Col size="sm-10"><p>{book["description"]}</p></Col></Row>
+                      <ViewBtn onClick={event => window.location.href = book.link}/>
                       <SaveBtn onClick={() => this.saveBook(book["_id"])} />
                     </ListItem>
                   ))}
-                </List>
+                </List></Col>
               ) : (
                 <h3>No Results to Display</h3>
               )}
-            </Wrapper>
+            
           </Col>
         </Row>
       </Container>
