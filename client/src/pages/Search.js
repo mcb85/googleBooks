@@ -40,7 +40,7 @@ class Books extends Component {
             book["authors"] = item.volumeInfo.authors;
             book["image"] = item.volumeInfo.imageLinks.thumbnail;
             book["description"] = item.volumeInfo.description;
-            book["selfLink"] = item.selfLink;
+            book["link"] = item.selfLink;
             allBooks.push(book);
           });
           await this.setState((state, props) => ({
